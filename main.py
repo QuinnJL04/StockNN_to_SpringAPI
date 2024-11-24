@@ -183,7 +183,7 @@ def train_model(X_train_tensor, X_test_tensor, Y_train_tensor, Y_test_tensor):
             loss = criterion(outputs, Y_batch)
             print(f"Test Loss: {loss.item()}")
 
-    model.save('my_lstm_model.h5')
+    torch.save(model.state_dict(), 'lstm_model.pth')
 
 def predict_with_model(data):
     loaded_model = load_model('my_lstm_model.h5')
