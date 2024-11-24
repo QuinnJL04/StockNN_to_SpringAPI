@@ -10,6 +10,7 @@ from tensorflow.keras.layers import LSTM
 from tensorflow.keras.models import load_model
 import math
 from sklearn.metrics import mean_squared_error
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -64,8 +65,14 @@ def choose_stock(data, name:str, type:str):
     """
     Allows user to chose which stock and what time of day to train the model on
     """
-    new_data = data.reset_index()[(type, name)]
-    return new_data
+    nvda = data.reset_index()[(type, 'NVDA')]
+    amzn = data.reset_index()[(type), 'AMZN']
+    googl = data.reset_index()[(type), 'GOOGL']
+    msft = data.reset_index()[(type), 'MSFT']
+    appl = data.reset_index()[(type, 'AAPL')]
+    combined_data = pd.concat([nvda, amzn, googl, msft,appl], axis=1)
+    print(combined_data.head(5))
+    return combined_data
 
 
 def partition_data(data):
@@ -105,9 +112,7 @@ def clean_dataset(X_train, X_test, Y_train, Y_test):
     return X_train_tensor, X_test_tensor, Y_train_tensor, Y_test_tensor
 
 class LSTMModel(nn.Module):
-    """
-    The neural net model
-    """
+    
     def __init__(self, input_size, hidden_layer_size, time_step):
         super(LSTMModel, self).__init__()
         self.lstm1 = nn.LSTM(input_size, hidden_layer_size, batch_first=True)
@@ -121,7 +126,6 @@ class LSTMModel(nn.Module):
         x, _ = self.lstm3(x)
         x = self.fc(x[:, -1, :])  
         return x
-
 def train_model(X_train_tensor, X_test_tensor, Y_train_tensor, Y_test_tensor):
     """
     Trains the LSTM on the given stock and time of day
