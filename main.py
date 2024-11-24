@@ -1,6 +1,5 @@
 import yfinance as yf
 import pandas as pd
-import matplotlib.pyplot as plt
 import os
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
@@ -20,8 +19,6 @@ from torch.utils.data import DataLoader, TensorDataset
 dirname = os.getcwd()
 csv_path = os.path.join(dirname, 'stock_data.csv')
 scaler = MinMaxScaler()
-
-#getting data for stocks
 
 
 def get_features():
@@ -62,7 +59,6 @@ names = ['NVDA', 'AMZN', 'GOOGL', 'MSFT', 'AAPL']
 types = ['']
 def choose_stock(data, name:str, type:str):
     new_data = data.reset_index()[(type, name)]
-    plt.plot(new_data)
     return new_data
 
 
@@ -114,6 +110,10 @@ class LSTMModel(nn.Module):
 def train_model(X_train_tensor, X_test_tensor, Y_train_tensor, Y_test_tensor):
      # Check if CUDA is available
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
+    input_size = 1  
+    hidden_layer_size = 50
+    model = LSTMModel(input_size, hidden_layer_size, time_step)
 
     print(f"Using device: {device}")
     model = model.to(device)
