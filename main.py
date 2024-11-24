@@ -22,6 +22,9 @@ scaler = MinMaxScaler()
 
 
 def get_features():
+    """
+    Gathers features for the given 5 stocks and drops any unnecessary columns
+    """
     stocks = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA"]
     data = yf.download(stocks, start="2018-01-01", end="2024-01-01", interval="1d")
 
@@ -56,13 +59,19 @@ def get_features():
     return data
 
 names = ['NVDA', 'AMZN', 'GOOGL', 'MSFT', 'AAPL']
-types = ['']
+types = ['Close', 'Open']
 def choose_stock(data, name:str, type:str):
+    """
+    Allows user to chose which stock and what time of day to train the model on
+    """
     new_data = data.reset_index()[(type, name)]
     return new_data
 
 
 def partition_data(data):
+    """
+    Splits the data into train and test
+    """
     train_size = int(len(data)*0.65)
     test_size = len(data) - train_size
     train_data,test_data = data[0:train_size,:],data[train_size:len(data),:1]
@@ -78,6 +87,9 @@ def create_dataset(dataset, time_step = 1):
     return np.array(dataX),np.array(dataY)
 
 def clean_dataset(X_train, X_test, Y_train, Y_test):
+    """
+    Shortens the data to a size that is divisible by 100
+    """
      # Ensure the data size is divisible by 100 for reshaping
     train_samples = len(X_train) - (len(X_train) % 100)  # Truncate to the closest multiple of 100 cause input size was too large before
     test_samples = len(X_test) - (len(X_test) % 100) 
@@ -93,6 +105,9 @@ def clean_dataset(X_train, X_test, Y_train, Y_test):
     return X_train_tensor, X_test_tensor, Y_train_tensor, Y_test_tensor
 
 class LSTMModel(nn.Module):
+    """
+    The neural net model
+    """
     def __init__(self, input_size, hidden_layer_size, time_step):
         super(LSTMModel, self).__init__()
         self.lstm1 = nn.LSTM(input_size, hidden_layer_size, batch_first=True)
@@ -108,6 +123,9 @@ class LSTMModel(nn.Module):
         return x
 
 def train_model(X_train_tensor, X_test_tensor, Y_train_tensor, Y_test_tensor):
+    """
+    Trains the LSTM on the given stock and time of day
+    """
      # Check if CUDA is available
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
@@ -167,12 +185,17 @@ def train_model(X_train_tensor, X_test_tensor, Y_train_tensor, Y_test_tensor):
 
     model.save('my_lstm_model.h5')
 
+def predict_with_model(data):
+    loaded_model = load_model('my_lstm_model.h5')
+    result = loaded_model.predict(data)
+    return result
+
 
 if __name__ == '__main__':
     data = get_features()
 
     this_data = choose_stock(data, 'NVDA', 'Close')
-    this_data = scaler.fit_transform(np.array(data).reshape(-1,1)) 
+    this_data = scaler.fit_transform(np.array(this_data).reshape(-1,1)) 
     train_data, test_data = partition_data(this_data)
     print(train_data[0:5])
 
