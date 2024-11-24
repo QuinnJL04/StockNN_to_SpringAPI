@@ -179,4 +179,5 @@ if __name__ == '__main__':
     time_step = 100
     X_train,Y_train =  create_dataset(train_data,time_step)
     X_test,Y_test =  create_dataset(test_data,time_step)      
-    clean_dataset(X_train, X_test, Y_train, Y_test)  
+    X_train_tensor, X_test_tensor, Y_train_tensor, Y_test_tensor = clean_dataset(X_train, X_test, Y_train, Y_test)  
+    train_model(X_train_tensor, X_test_tensor, Y_train_tensor, Y_test_tensor)
