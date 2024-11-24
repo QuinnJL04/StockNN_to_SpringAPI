@@ -198,7 +198,7 @@ def predict_with_model(data):
 if __name__ == '__main__':
     data = get_features()
 
-    this_data = choose_stock(data, 'NVDA', 'Close')
+    this_data = choose_stock(data, 'Close')
     this_data = scaler.fit_transform(np.array(this_data).reshape(-1,1)) 
     train_data, test_data = partition_data(this_data)
     print(train_data[0:5])
