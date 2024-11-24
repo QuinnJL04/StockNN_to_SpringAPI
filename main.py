@@ -61,7 +61,7 @@ def get_features():
 
 names = ['NVDA', 'AMZN', 'GOOGL', 'MSFT', 'AAPL']
 types = ['Close', 'Open']
-def choose_stock(data, name:str, type:str):
+def choose_stock(data, type:str):
     """
     Allows user to chose which stock and what time of day to train the model on
     """
